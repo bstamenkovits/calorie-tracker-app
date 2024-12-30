@@ -29,7 +29,6 @@ def update_google_sheet(sheet, updated_data):
 def main():
     st.title("Calorie Tracker")
     st.write("Original Data from Google Sheets:")
-
     df = pd.DataFrame({
         "Food": ["Apple", "Banana", "Carrot"],
         "Calories": [95, 105, 25],
@@ -37,7 +36,15 @@ def main():
     })
 
     st.dataframe(df)
-    st.button("Refresh Data")
+
+    st.title("Add Food")
+    name = st.selectbox("Food Name", options=df["Food"])
+    meal = st.selectbox("Meal", options=["Breakfast", "Lunch", "Dinner", "Snack"])
+    serving = st.selectbox("Servings", options=[i for i in range(1, 11)])
+
+    st.write(f"### For {meal}, {serving} {name} = {serving*100} kcal")
+    st.button("Add Food")
+
 
     with st.expander("Edit Data"):
         sheet_url = st.secrets["connections"]["gsheets"]["spreadsheet"]
