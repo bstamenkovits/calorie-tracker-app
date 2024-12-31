@@ -7,7 +7,7 @@ from google_sheets import GoogleSheetsInterface
 gsheets = GoogleSheetsInterface()
 
 def main():
-    st.title("Calorie Tracker 2")
+    st.title("Calorie Tracker")
     st.write("Original Data from Google Sheets:")
     df = pd.DataFrame({
         "Food": ["Apple", "Banana", "Carrot"],
