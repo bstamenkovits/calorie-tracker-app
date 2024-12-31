@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from google_sheets import GoogleSheetsInterface
 
 gsheets = GoogleSheetsInterface()
@@ -15,7 +16,14 @@ st.write(
     """
 )
 
+
+"""
+Interface for adding food log
+"""
+who = st.selectbox("Who", options=["Bela", "Marleen"])
+
 st.write("#### When 🕙")
+date = st.date_input("Date", value=pd.to_datetime("today"))
 meal = st.selectbox("Meal", options=["Breakfast", "Lunch", "Dinner", "Snack"])
 
 st.write("#### What ❓")
@@ -39,9 +47,31 @@ kcal = (kcal_per_100g * weight) / 100
 st.write(f"### For {meal}, {quantity} {serving} of {name} =  {kcal} kcal")
 
 
+"""
+Add food to the google sheet
+"""
+if st.button("Add Food"):
+    df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
+    new_row = {
+        "date": date.strftime("%Y-%m-%d"),
+        "meal": meal,
+        "name": name,
+        "quantity": quantity,
+        "serving": serving,
+    }
+    df_food_log = pd.concat([df_food_log, pd.DataFrame([new_row])], ignore_index=True)
 
-st.button("Add Food")
+    st.write("updated data:")
+    st.dataframe(df_food_log.tail(1))
 
+    gsheets.update_google_sheet(
+        sheet_name=f"food_log_{who.lower()}",
+        updated_data=df_food_log
+    )
+    st.success("Food log added successfully!")
+
+# df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
+# st.dataframe(df_food_log)
 
 
 
