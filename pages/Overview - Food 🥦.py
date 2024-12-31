@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from google_sheets import GoogleSheetsInterface
 from datetime import datetime
+import time
+from gspread.exceptions import APIError
 
 gsheets = GoogleSheetsInterface()
 
@@ -16,12 +18,15 @@ st.write("View and Log Food and Calorie Intake")
 
 who = st.selectbox("Who", options=["Bela", "Marleen"])
 date = st.date_input("Date", value=pd.to_datetime("today"))
-
-df_food_data = gsheets.load_google_sheet_data(sheet_name="food_data")
-df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
-df_weight_log = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lower()}")
-df_info = gsheets.load_google_sheet_data(sheet_name=f"info_{who.lower()}")
-df_target = gsheets.load_google_sheet_data(sheet_name=f"target_{who.lower()}")
+try:
+    df_food_data = gsheets.load_google_sheet_data(sheet_name="food_data")
+    df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
+    df_weight_log = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lower()}")
+    df_info = gsheets.load_google_sheet_data(sheet_name=f"info_{who.lower()}")
+    df_target = gsheets.load_google_sheet_data(sheet_name=f"target_{who.lower()}")
+except APIError as e:
+    st.warning("Exceeded Google Sheets API quota. Please wait...")
+    time.sleep(10)
 
 date = date.strftime("%Y-%m-%d")
 
