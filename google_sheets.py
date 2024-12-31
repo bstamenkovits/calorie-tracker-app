@@ -49,7 +49,7 @@ class GoogleSheetsInterface:
         data = pd.DataFrame(sheet.get_all_records())
 
         # store the data in a csv file
-        data.to_csv(f"{sheet_name}.csv")
+        data.to_csv(f"{sheet_name}.csv", index=False)
         return data
 
     def update_google_sheet(self, sheet_name:str, updated_data:pd.DataFrame) -> None:

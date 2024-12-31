@@ -18,6 +18,8 @@ st.write("View and Log Food and Calorie Intake")
 
 who = st.selectbox("Who", options=["Bela", "Marleen"])
 date = st.date_input("Date", value=pd.to_datetime("today"))
+date = date.strftime("%Y-%m-%d")
+
 try:
     df_food_data = gsheets.load_google_sheet_data(sheet_name="food_data")
     df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
@@ -28,7 +30,6 @@ except APIError as e:
     st.warning("Exceeded Google Sheets API quota. Please wait...")
     time.sleep(10)
 
-date = date.strftime("%Y-%m-%d")
 
 def calc_weight(row):
     if row["serving"]=="g":
@@ -38,7 +39,6 @@ def calc_weight(row):
 
 def calc_total_calories(row):
     return round(row["weight"] * row["Calories (kcal)"]/100, 0)
-
 
 
 df_day = df_food_log[(df_food_log["date"]==date)]
@@ -116,6 +116,9 @@ else:
     colors = ("#bababa", "#9f9f9f", "#616161", "#4b4b4b", "#ab3f3f")
 st.bar_chart(calories_by_meal, horizontal=True, color=colors)
 
+if st.button("Refresh Data"):
+    st.rerun()
+
 st.divider()
 
 df_breakfast = df_day[df_day["meal"]=="Breakfast"]
@@ -144,7 +147,7 @@ with st.expander("Add Breakfast Food Log"):
         quantity = st.number_input("Quantity (g)", min_value=0, step=1, key=f"quantity_{meal}")
         weight = quantity
     else:
-        quantity = st.selectbox("Servings", options=[i for i in range(1, 11)], key=f"quantity_{meal}")
+        quantity = st.number_input("Servings", min_value=0., step=0.01, key=f"quantity_{meal}")
         weight = (quantity * df_food_data[df_food_data["Name"]==name]["Single Serving (g)"]).values[0]
 
     kcal_per_100g = df_food_data[df_food_data["Name"]==name]["Calories (kcal)"].values[0]
@@ -169,6 +172,8 @@ with st.expander("Add Breakfast Food Log"):
             updated_data=df_food_log
         )
         st.success("Food log added successfully!")
+        st.rerun()
+
 
 st.write(f"### 🥗 Lunch")
 st.dataframe(df_lunch[["Food", "Quantity", "Serving", "Calories"]])
@@ -188,7 +193,7 @@ with st.expander("Add Lunch Food Log"):
         quantity = st.number_input("Quantity (g)", min_value=0, step=1, key=f"quantity_{meal}")
         weight = quantity
     else:
-        quantity = st.selectbox("Servings", options=[i for i in range(1, 11)], key=f"quantity_{meal}")
+        quantity = st.number_input("Servings", min_value=0., step=0.01, key=f"quantity_{meal}")
         weight = (quantity * df_food_data[df_food_data["Name"]==name]["Single Serving (g)"]).values[0]
 
     kcal_per_100g = df_food_data[df_food_data["Name"]==name]["Calories (kcal)"].values[0]
@@ -213,6 +218,7 @@ with st.expander("Add Lunch Food Log"):
             updated_data=df_food_log
         )
         st.success("Food log added successfully!")
+        st.rerun()
 
 
 st.write(f"### 🍗 Dinner")
@@ -233,7 +239,7 @@ with st.expander("Add Dinner Food Log"):
         quantity = st.number_input("Quantity (g)", min_value=0, step=1, key=f"quantity_{meal}")
         weight = quantity
     else:
-        quantity = st.selectbox("Servings", options=[i for i in range(1, 11)], key=f"quantity_{meal}")
+        quantity = st.number_input("Servings", min_value=0., step=0.01, key=f"quantity_{meal}")
         weight = (quantity * df_food_data[df_food_data["Name"]==name]["Single Serving (g)"]).values[0]
 
     kcal_per_100g = df_food_data[df_food_data["Name"]==name]["Calories (kcal)"].values[0]
@@ -258,6 +264,7 @@ with st.expander("Add Dinner Food Log"):
             updated_data=df_food_log
         )
         st.success("Food log added successfully!")
+        st.rerun()
 
 
 st.write(f"### 🍙 Snack")
@@ -278,7 +285,7 @@ with st.expander("Add Snack Food Log"):
         quantity = st.number_input("Quantity (g)", min_value=0, step=1, key=f"quantity_{meal}")
         weight = quantity
     else:
-        quantity = st.selectbox("Servings", options=[i for i in range(1, 11)], key=f"quantity_{meal}")
+        quantity = st.number_input("Servings", min_value=0., step=0.01, key=f"quantity_{meal}")
         weight = (quantity * df_food_data[df_food_data["Name"]==name]["Single Serving (g)"]).values[0]
 
     kcal_per_100g = df_food_data[df_food_data["Name"]==name]["Calories (kcal)"].values[0]
@@ -303,5 +310,4 @@ with st.expander("Add Snack Food Log"):
             updated_data=df_food_log
         )
         st.success("Food log added successfully!")
-
-# st.sidebar.success("Go to section...")
+        st.rerun()
