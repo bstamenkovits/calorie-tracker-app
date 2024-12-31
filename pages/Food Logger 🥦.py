@@ -5,9 +5,9 @@ gsheets = GoogleSheetsInterface()
 df_food_data = gsheets.load_google_sheet_data(sheet_name="food_data")
 
 
-st.set_page_config(page_title="Food Logger", page_icon="🍔")
+st.set_page_config(page_title="Food Logger", page_icon="🥦")
 
-st.markdown("# Food Logger 🍔")
+st.markdown("# Food Logger 🥦")
 st.sidebar.header("Food Logger")
 st.write(
     """
