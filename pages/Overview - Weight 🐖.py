@@ -13,8 +13,8 @@ st.markdown("# Weight Overview 🐖")
 st.write("View and log your weight.")
 
 who = st.selectbox("Who", options=["Bela", "Marleen"])
-
 df_weight_log = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lower()}")
+
 current_weight = float(df_weight_log["weight"].values[-1])
 
 df = df_weight_log.rename(columns={"date": "Date", "weight": "Weight (kg)"})

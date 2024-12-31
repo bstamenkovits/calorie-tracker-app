@@ -20,7 +20,8 @@ date = st.date_input("Date", value=pd.to_datetime("today"))
 df_food_data = gsheets.load_google_sheet_data(sheet_name="food_data")
 df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
 df_weight_log = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lower()}")
-df_exercise_log = gsheets.load_google_sheet_data(sheet_name=f"exercise_log_{who.lower()}")
+df_info = gsheets.load_google_sheet_data(sheet_name=f"info_{who.lower()}")
+df_target = gsheets.load_google_sheet_data(sheet_name=f"target_{who.lower()}")
 
 date = date.strftime("%Y-%m-%d")
 
@@ -73,8 +74,6 @@ def calculate_energy_burned(weight, height, birthday, exercise_level):
     BMR = 10 * weight + 6.25 * height - 5 * age
     return BMR * exercise_map[exercise_level]
 
-df_info = gsheets.load_google_sheet_data(sheet_name=f"info_{who.lower()}")
-
 height = df_info["height"].values[0]
 birthday = pd.to_datetime(df_info["birthday"].values[0])
 
@@ -83,7 +82,7 @@ st.write("### Today's Energy Overview")
 exercise_level = st.slider("Exercise Level", min_value=0, max_value=5, value=2, step=1)
 capacity = calculate_energy_burned(current_weight, height, birthday, exercise_level)
 
-df_target = gsheets.load_google_sheet_data(sheet_name=f"target_{who.lower()}")
+
 target = df_target["target"].values[0]
 
 capacity = capacity - target
@@ -148,7 +147,6 @@ with st.expander("Add Breakfast Food Log"):
     st.write(f"###### For {meal}, {quantity} {serving} of {name} =  {kcal} kcal")
 
     if st.button("Add Food", key=f"button_{meal}"):
-        df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
         new_row = {
             "date": date,
             "meal": meal,
@@ -193,7 +191,6 @@ with st.expander("Add Lunch Food Log"):
     st.write(f"###### For {meal}, {quantity} {serving} of {name} =  {kcal} kcal")
 
     if st.button("Add Food", key=f"button_{meal}"):
-        df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
         new_row = {
             "date": date,
             "meal": meal,
@@ -239,7 +236,6 @@ with st.expander("Add Dinner Food Log"):
     st.write(f"###### For {meal}, {quantity} {serving} of {name} =  {kcal} kcal")
 
     if st.button("Add Food", key=f"button_{meal}"):
-        df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
         new_row = {
             "date": date,
             "meal": meal,
@@ -285,7 +281,6 @@ with st.expander("Add Snack Food Log"):
     st.write(f"###### For {meal}, {quantity} {serving} of {name} =  {kcal} kcal")
 
     if st.button("Add Food", key=f"button_{meal}"):
-        df_food_log = gsheets.load_google_sheet_data(sheet_name=f"food_log_{who.lower()}")
         new_row = {
             "date": date,
             "meal": meal,

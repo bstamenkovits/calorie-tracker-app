@@ -22,6 +22,8 @@ st.write(
 who = st.selectbox("Who", options=["Bela", "Marleen"])
 
 df_target = gsheets.load_google_sheet_data(sheet_name=f"target_{who.lower()}")
+df_weight = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lower()}")
+
 target = df_target["target"].values[0]
 st.write(f"#### Current Goal: {target} kcal deficit")
 
@@ -30,7 +32,7 @@ st.divider()
 st.header("Weight Loss Goal Calculator")
 
 
-df_weight = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lower()}")
+
 start_weight = int(round(df_weight["weight"].values[0], 0))
 current_weight = int(round(df_weight["weight"].values[-1],0))
 
