@@ -95,7 +95,7 @@ for meal in ["Breakfast", "Lunch", "Dinner", "Snack"]:
     if meal not in calories_by_meal.columns:
         calories_by_meal[meal] = 0
 calories_by_meal = calories_by_meal[["Breakfast", "Lunch", "Dinner", "Snack", "_Remaining"]]
-calories_by_meal = calories_by_meal.rename(columns={"Breakfast": "1. 🍞 Breakfast", "Lunch": "2. 🥪 Lunch", "Dinner": "3. 🥩 Dinner", "Snack": "4. 🍌 Snack", "_Remaining": "🔥 Remaining"})
+calories_by_meal = calories_by_meal.rename(columns={"Breakfast": "1. 🍌 Breakfast", "Lunch": "2. 🥗 Lunch", "Dinner": "3. 🥗 Dinner", "Snack": "4. 🍙 Snack", "_Remaining": "🔥 Remaining"})
 
 
 if remaining.values[0] > 0:
@@ -120,7 +120,7 @@ df_dinner = df_day[df_day["meal"]=="Dinner"]
 df_snack = df_day[df_day["meal"]=="Snack"]
 
 
-st.write(f"### 🍞 Breakfast")
+st.write(f"### 🍌 Breakfast")
 st.dataframe(df_breakfast[["Food", "Quantity", "Serving", "Calories"]])
 st.write(f"###### Total Calories: {df_breakfast['Calories'].sum()} kcal")
 
@@ -167,7 +167,7 @@ with st.expander("Add Breakfast Food Log"):
         )
         st.success("Food log added successfully!")
 
-st.write(f"### 🥪 Lunch")
+st.write(f"### 🥗 Lunch")
 st.dataframe(df_lunch[["Food", "Quantity", "Serving", "Calories"]])
 st.write(f"###### Total Calories: {df_lunch['Calories'].sum()} kcal")
 with st.expander("Add Lunch Food Log"):
@@ -213,7 +213,7 @@ with st.expander("Add Lunch Food Log"):
         st.success("Food log added successfully!")
 
 
-st.write(f"### 🥩 Dinner")
+st.write(f"### 🍗 Dinner")
 st.dataframe(df_dinner[["Food", "Quantity", "Serving", "Calories"]])
 st.write(f"###### Total Calories: {df_dinner['Calories'].sum()} kcal")
 with st.expander("Add Dinner Food Log"):
@@ -259,7 +259,7 @@ with st.expander("Add Dinner Food Log"):
         st.success("Food log added successfully!")
 
 
-st.write(f"### 🍌 Snack")
+st.write(f"### 🍙 Snack")
 st.dataframe(df_snack[["Food", "Quantity", "Serving", "Calories"]])
 st.write(f"###### Total Calories: {df_snack['Calories'].sum()} kcal")
 with st.expander("Add Snack Food Log"):
