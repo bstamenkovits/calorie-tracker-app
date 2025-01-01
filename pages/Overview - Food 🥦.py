@@ -122,10 +122,6 @@ if st.button("Refresh Data"):
 
 st.divider()
 
-
-"""
-Food Logs
-"""
 df_breakfast = df_day[df_day["meal"]=="Breakfast"]
 df_lunch = df_day[df_day["meal"]=="Lunch"]
 df_dinner = df_day[df_day["meal"]=="Dinner"]
