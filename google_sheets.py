@@ -44,7 +44,7 @@ class GoogleSheetsInterface:
 
             # if the file is not too old, use return data from file
             if  elapsed_time < limit:
-                return pd.read_csv(f"{sheet_name}.csv")
+                return pd.read_csv(f"{self.cache_path}/{sheet_name}.csv")
 
         # if the file is too old, download the data from Google Sheets
         sheet = self.client.open_by_url(self.url).worksheet(sheet_name)

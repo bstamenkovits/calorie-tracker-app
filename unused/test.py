@@ -7,6 +7,7 @@ from gspread.exceptions import APIError
 
 gsheets = GoogleSheetsInterface()
 
+
 st.set_page_config(
     page_title="Food Overview",
     page_icon="🥦",
@@ -200,3 +201,46 @@ for icon, meal, df in meals:
 
                 st.success("Food log removed successfully!")
                 st.rerun()
+
+
+# with st.expander("Add Breakfast Food Log"):
+#     meal = "Breakfast"
+#     # st.write("###### What ❓")
+#     type = st.selectbox("Type of Food", options = df_food_data["Type"].unique(), key=f"type_{meal}")
+#     name = st.selectbox("Food Name", options=df_food_data[df_food_data["Type"]==type].sort_values(by="Name")["Name"], key=f"name_{meal}")
+
+#     # st.write("###### Amount ⚖️")
+#     serving_options = df_food_data[df_food_data["Name"]==name]["Serving Name"].to_list()
+#     serving_options.append("g")
+#     serving = st.selectbox("Type of serving", options=serving_options, key=f"serving_{meal}")
+
+#     if serving == "g":
+#         quantity = st.number_input("Quantity (g)", min_value=0, step=1, key=f"quantity_{meal}")
+#         weight = quantity
+#     else:
+#         quantity = st.number_input("Servings", min_value=0., step=0.01, key=f"quantity_{meal}")
+#         weight = (quantity * df_food_data[df_food_data["Name"]==name]["Single Serving (g)"]).values[0]
+
+#     kcal_per_100g = df_food_data[df_food_data["Name"]==name]["Calories (kcal)"].values[0]
+#     kcal = (kcal_per_100g * weight) / 100
+#     st.write(f"###### For {meal}, {quantity} {serving} of {name} =  {kcal} kcal")
+
+#     if st.button("Add Food", key=f"button_{meal}"):
+#         new_row = {
+#             "date": date,
+#             "meal": meal,
+#             "name": name,
+#             "quantity": quantity,
+#             "serving": serving,
+#         }
+#         df_food_log = pd.concat([df_food_log, pd.DataFrame([new_row])], ignore_index=True)
+
+#         st.write("updated data:")
+#         st.dataframe(df_food_log.tail(1))
+
+#         gsheets.update_google_sheet(
+#             sheet_name=f"food_log_{who.lower()}",
+#             updated_data=df_food_log
+#         )
+#         st.success("Food log added successfully!")
+#         st.rerun()
