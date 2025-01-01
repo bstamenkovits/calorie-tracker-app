@@ -36,7 +36,7 @@ class GoogleSheetsInterface:
         # check if file exists
         if os.path.exists(f"{self.cache_path}/{sheet_name}.csv"):
             # check how old the file is
-            file_creation_time = os.path.getctime(f"{sheet_name}.csv")
+            file_creation_time = os.path.getctime(f"{self.cache_path}/{sheet_name}.csv")
             current_time = pd.Timestamp.now().timestamp()
             elapsed_time = current_time - file_creation_time # miliseconds
 
