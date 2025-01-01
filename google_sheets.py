@@ -40,17 +40,21 @@ class GoogleSheetsInterface:
             current_time = pd.Timestamp.now().timestamp()
             elapsed_time = current_time - file_creation_time # miliseconds
 
-            limit = 1000*60*3 # 3 minutes
-
+            limit = 60*5 # 5 minutes
+            limit += 3600 # 1 hour (daylight saving time or timezone difference)
+            
             # if the file is not too old, use return data from file
             if  elapsed_time < limit:
                 return pd.read_csv(f"{self.cache_path}/{sheet_name}.csv")
 
+        print("API Call")
         # if the file is too old, download the data from Google Sheets
         sheet = self.client.open_by_url(self.url).worksheet(sheet_name)
         data = pd.DataFrame(sheet.get_all_records())
 
         # store the data in a csv file
+        if os.path.exists(f"{self.cache_path}/{sheet_name}.csv"):
+            os.remove(f"{self.cache_path}/{sheet_name}.csv")
         data.to_csv(f"{self.cache_path}/{sheet_name}.csv", index=False)
         return data
 
