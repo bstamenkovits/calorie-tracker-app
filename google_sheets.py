@@ -11,6 +11,8 @@ import os
 
 class GoogleSheetsInterface:
 
+    cache_path = "cache/gsheets"
+
     def __init__(self):
         self.client = self._get_client()
         self.url = st.secrets["connections"]["gsheets"]["spreadsheet"]
@@ -32,7 +34,7 @@ class GoogleSheetsInterface:
             data(pd.DataFrame): The data from the Google Sheet as a pandas DataFrame
         """
         # check if file exists
-        if os.path.exists(f"{sheet_name}.csv"):
+        if os.path.exists(f"{self.cache_path}/{sheet_name}.csv"):
             # check how old the file is
             file_creation_time = os.path.getctime(f"{sheet_name}.csv")
             current_time = pd.Timestamp.now().timestamp()
@@ -49,7 +51,7 @@ class GoogleSheetsInterface:
         data = pd.DataFrame(sheet.get_all_records())
 
         # store the data in a csv file
-        data.to_csv(f"{sheet_name}.csv", index=False)
+        data.to_csv(f"{self.cache_path}/{sheet_name}.csv", index=False)
         return data
 
     def update_google_sheet(self, sheet_name:str, updated_data:pd.DataFrame) -> None:
@@ -77,8 +79,8 @@ class GoogleSheetsInterface:
         sheet.update([updated_data.columns.values.tolist()] + updated_data.values.tolist())
 
         # remove sheet_name.csv file to force download from Google Sheets
-        if os.path.exists(f"{sheet_name}.csv"):
-            os.remove(f"{sheet_name}.csv")
+        if os.path.exists(f"{self.cache_path}/{sheet_name}.csv"):
+            os.remove(f"{self.cache_path}/{sheet_name}.csv")
 
     def _get_client(self) -> Client:
         """
