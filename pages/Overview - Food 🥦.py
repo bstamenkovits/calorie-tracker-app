@@ -15,7 +15,7 @@ st.set_page_config(
 st.write("# Food Overview 🥦")
 st.write("View and Log Food and Calorie Intake")
 
-who = st.selectbox("Who", options=["Bela", "Marleen"])
+who = st.pills("Who", options=["Bela", "Marleen"], default="Bela", selection_mode="single")
 date = st.date_input("Date", value=pd.to_datetime("today"))
 date = date.strftime("%Y-%m-%d")
 
@@ -67,7 +67,7 @@ calories_by_meal.columns = calories_by_meal.iloc[0]
 calories_by_meal = calories_by_meal[1:]
 calories_by_meal.reset_index(drop=True, inplace=True)
 
-def calculate_energy_burned(weight, height, birthday, exercise_level):
+def calculate_energy_burned(weight, height, birthday, exercise_level, sex):
     exercise_map = {
         0: 1.2,
         1: 1.375,
@@ -76,18 +76,26 @@ def calculate_energy_burned(weight, height, birthday, exercise_level):
         4: 1.725,
         5: 1.9
     }
+
+    sex_correction = {
+        "M": 5,
+        "F": -161
+    }
+
     age = (datetime.today() - birthday).days / 365
     BMR = 10 * weight + 6.25 * height - 5 * age
-    return BMR * exercise_map[exercise_level]
+    print(BMR, sex_correction[sex])
+    return (BMR + sex_correction[sex]) * exercise_map[exercise_level]
 
 height = df_info["height"].values[0]
 birthday = pd.to_datetime(df_info["birthday"].values[0])
+sex = df_info["sex"].values[0]
 
 st.write("### Today's Energy Overview")
 exercise_level = st.slider("Exercise Level", min_value=0, max_value=5, value=2, step=1)
 
 current_weight = float(df_weight_log["weight"].values[-1])
-capacity = calculate_energy_burned(current_weight, height, birthday, exercise_level)
+capacity = calculate_energy_burned(current_weight, height, birthday, exercise_level, sex)
 target = df_target["target"].values[0]
 capacity = capacity - target
 
@@ -106,13 +114,15 @@ calories_by_meal = calories_by_meal.rename(columns={"Breakfast": "1. 🍌 Breakf
 if remaining.values[0] > 0:
     st.write(f"#### Great Job!", unsafe_allow_html=True)
     st.markdown(f"<span style='font-weight:bold'>Consumed: {round(consumed.to_list()[0])} kcal </span>", unsafe_allow_html=True)
+    st.markdown(f"<span style='font-weight:bold'>Allowed: {round(capacity)} kcal </span>", unsafe_allow_html=True)
     st.markdown(f"<span style='color:green; font-weight:bold'>Remaining: {round(float(remaining.values[0]))} kcal </span>", unsafe_allow_html=True)
     colors = ("#d66154", "#dbd5ba", "#48ab8a", "#8db6c3", "#898989")
     colors = ("#bababa", "#9f9f9f", "#616161", "#4b4b4b", "#209253")
 else:
     st.write(f"#### Oh No!", unsafe_allow_html=True)
     st.markdown(f"<span style='font-weight:bold'>Consumed: {round(consumed.to_list()[0])} kcal </span>", unsafe_allow_html=True)
-    st.markdown(f"<span style='color:red'>You have exceeded your daily calorie intake by {-remaining.values[0]} kcal</span>", unsafe_allow_html=True)
+    st.markdown(f"<span style='font-weight:bold'>Allowed: {round(capacity)} kcal </span>", unsafe_allow_html=True)
+    st.markdown(f"<span style='color:red'>You have exceeded your daily calorie intake by {round(-remaining.values[0])} kcal</span>", unsafe_allow_html=True)
     colors = ("#d66154", "#dbd5ba", "#48ab8a", "#8db6c3", "#dd2e44")
     colors = ("#bababa", "#9f9f9f", "#616161", "#4b4b4b", "#ab3f3f")
 st.bar_chart(calories_by_meal, horizontal=True, color=colors)
