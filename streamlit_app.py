@@ -12,7 +12,7 @@ st.set_page_config(
     page_icon="🍎",
 )
 
-st.write("# Healthy Plapjes! 🍎")
+st.write("# Gettin Healthay! 🍎")
 weight_log_bela = gsheets.load_google_sheet_data(sheet_name="weight_log_bela")
 weight_log_bela = weight_log_bela.sort_values(by="date")
 start_bela = weight_log_bela["weight"].values[0]
