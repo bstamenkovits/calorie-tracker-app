@@ -12,7 +12,7 @@ st.set_page_config(page_title="Weight Overview", page_icon="🐖")
 st.markdown("# Weight Overview 🐖")
 st.write("View and log your weight.")
 
-who = st.selectbox("Who", options=["Bela", "Marleen"])
+who = st.pills("Who", options=["Bela", "Marleen"], default="Bela", selection_mode="single")
 df_weight_log = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lower()}")
 
 current_weight = float(df_weight_log["weight"].values[-1])
