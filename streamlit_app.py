@@ -25,6 +25,13 @@ weight_log_marleen["delta"] = weight_log_marleen["weight"] - start_marleen
 
 df = weight_log_bela.merge(weight_log_marleen, on="date", suffixes=("_bela", "_marleen"), how="outer")
 
+if df['weight_bela'].values[-1] > df['weight_marleen'].values[-1]:
+    winner = "Bela"
+else:
+    winner = "Marleen"
+
+st.write(f"#### 🏆 *{winner}* is winning the weight loss challenge!")
+
 df = df.rename(columns={
     "date": "Date",
     "weight_bela": "Weight Bela (kg)",
@@ -33,6 +40,13 @@ df = df.rename(columns={
     "delta_marleen": "Delta Marleen (kg)"
 })
 
+
 st.write(df)
-fig = px.line(df, x="Date", y=["Delta Bela (kg)", "Delta Marleen (kg)"], title="Weight Loss Over Time")
+fig = px.line(df, x="Date", y=["Delta Bela (kg)", "Delta Marleen (kg)"], title="Weight Loss Over Time", range_y=[-12, 2], labels={"value": "Weight Lost (kg)"})
+fig.update_layout(legend=dict(
+    x=0.15,
+    y=0.38,
+    xanchor='center',
+    yanchor='top'
+))
 st.plotly_chart(fig)
