@@ -160,24 +160,32 @@ for icon, meal, df in meals:
     st.write(f"###### Total Calories: {df['Calories'].sum()} kcal")
 
     with st.expander(f"Add or Remove {meal} Food Log"):
-        selection = st.pills("Mode", options=["Add Food", "Remove Food"],selection_mode="single", key=f"mode_{meal}")
+        selection = st.pills("Mode", options=["Add Food", "Remove Food"],selection_mode="single", key=f"mode_{meal}", default="Add Food")
         if selection == "Add Food":
             st.write("### Add Food")
-            name = st.selectbox("Food Name", options=df_food_data.sort_values(by="Name")["Name"], key=f"name_{meal}")
-            serving = st.selectbox("Serving Type", options=[df_food_data.loc[df_food_data["Name"] == name, "Serving Name"].values[0], "g"], key=f"serving+{meal}")
-
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                name = st.selectbox("Food Name", options=df_food_data.sort_values(by="Name")["Name"], key=f"name_{meal}", placeholder="Select Food", label_visibility="hidden")
+            with col2:
+                quantity = st.number_input("Servings", min_value=0., step=0.01, value=1.0, key=f"quantity_{meal}", label_visibility="hidden")
+            with col3:
+                serving = st.selectbox("Serving Type", options=[df_food_data.loc[df_food_data["Name"] == name, "Serving Name"].values[0], "g"], key=f"serving+{meal}", label_visibility="hidden")
             if serving == "g":
-                quantity = st.number_input("Quantity (g)", min_value=0, step=1, value=100, key=f"quantity_{meal}")
+                # quantity = st.number_input("Quantity (g)", min_value=0, step=1, value=100, key=f"quantity_{meal}")
                 weight = quantity
             else:
-                quantity = st.number_input("Servings", min_value=0., step=0.01, value=1.0, key=f"quantity_{meal}")
+                # quantity = st.number_input("Servings", min_value=0., step=0.01, value=1.0, key=f"quantity_{meal}")
                 weight = (quantity * df_food_data[df_food_data["Name"]==name]["Single Serving (g)"]).values[0]
 
             kcal_per_100g = df_food_data[df_food_data["Name"]==name]["Calories (kcal)"].values[0]
             kcal = (kcal_per_100g * weight) / 100
-            st.write(quantity, serving, " of ", name)
-            st.write("\t * ", weight, "g")
-            st.write("\t * ", kcal, "kcal")
+            st.write(" ")
+            # st.write(" ")
+            st.write(f"**Weight: ", weight, " g**")
+            st.write(f"**Calories: ", kcal, " kcal**")
+                # st.write(quantity, serving, " of ", name)
+                # st.write("\t * ", weight, "g")
+                # st.write("\t * ", kcal, "kcal")
 
             if st.button("Add Food", key=f"button_{meal}"):
                 new_row = {
