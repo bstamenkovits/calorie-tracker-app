@@ -34,6 +34,11 @@ st.write(
     """
 )
 
+if st.button("Clear Cache"):
+    gsheets.clear_cache()
+    local.clear_cache()
+    st.success("Cache cleared successfully!")
+
 st.divider()
 
 st.write("### Food Items")

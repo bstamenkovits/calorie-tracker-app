@@ -141,3 +141,11 @@ class GoogleSheetsInterface:
         credentials._private_key_pkcs8_pem = private_key_pkcs8_pem
 
         return credentials
+
+    def clear_cache(self):
+        """
+        Clear the cache of downloaded Google Sheets data
+        """
+        for file in os.listdir(self.cache_path):
+            if file.endswith(".csv"):
+                os.remove(f"{self.cache_path}/{file}")
