@@ -93,6 +93,16 @@ sex = df_info["sex"].values[0]
 
 st.write("### Today's Energy Overview")
 exercise_level = st.slider("Exercise Level", min_value=0, max_value=5, value=2, step=1)
+st.write("""
+| Activity Level | Description                                      | BMR Multiplication Factor |
+|----------------|--------------------------------------------------|---------------------------|
+| 0              | Sedentary: little or no exercise                 | 1.200                     |
+| 1              | Exercise 1-3 times/week                          | 1.375                     |
+| 2              | Exercise 4-5 times/week                          | 1.465                     |
+| 3              | Daily exercise or intense exercise 3-4 times/week| 1.550                     |
+| 4              | Intense exercise 6-7 times/week                  | 1.725                     |
+| 5              | Very intense exercise daily, or physical job     | 1.900                     |
+""")
 
 current_weight = float(df_weight_log["weight"].values[-1])
 capacity = calculate_energy_burned(current_weight, height, birthday, exercise_level, sex)
