@@ -22,9 +22,9 @@ df_new_recipe_ingredients = local.load_from_local_cache("new_recipe_ingredients"
 df_new_recipe_instructions = local.load_from_local_cache("new_recipe_instructions")
 
 
-st.set_page_config(page_title="Recipes", page_icon="🔪")
+st.set_page_config(page_title="Recipes", page_icon="📖")
 
-st.markdown("# Recipes 🔪")
+st.markdown("# Recipes 📖")
 st.sidebar.header("Recipes")
 st.write(
     """
