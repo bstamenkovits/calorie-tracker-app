@@ -42,12 +42,12 @@ class GoogleSheetsInterface:
 
             limit = 60*5 # 5 minutes
             limit += 3600 # 1 hour (daylight saving time or timezone difference)
-            
+
             # if the file is not too old, use return data from file
             if  elapsed_time < limit:
                 return pd.read_csv(f"{self.cache_path}/{sheet_name}.csv")
 
-        print("API Call")
+        print(f"API Call: {sheet_name}")
         # if the file is too old, download the data from Google Sheets
         sheet = self.client.open_by_url(self.url).worksheet(sheet_name)
         data = pd.DataFrame(sheet.get_all_records())
