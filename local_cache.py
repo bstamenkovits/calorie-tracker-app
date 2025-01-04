@@ -42,3 +42,11 @@ class LocalCacheInterface:
         file_path = f"{self.cache_path}/{sheet_name}.csv"
         if os.path.exists(file_path):
             os.remove(file_path)
+
+    def clear_cache(self):
+        """
+        Clear the cache of downloaded Google Sheets data
+        """
+        for file in os.listdir(self.cache_path):
+            if file.endswith(".csv"):
+                os.remove(f"{self.cache_path}/{file}")
