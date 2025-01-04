@@ -24,8 +24,9 @@ start_marleen = weight_log_marleen["weight"].values[0]
 weight_log_marleen["delta"] = weight_log_marleen["weight"] - start_marleen
 
 df = weight_log_bela.merge(weight_log_marleen, on="date", suffixes=("_bela", "_marleen"), how="outer")
+df = df.fillna(method='ffill')
 
-if df['weight_bela'].values[-1] > df['weight_marleen'].values[-1]:
+if df['weight_bela'].values[-1] < df['weight_marleen'].values[-1]:
     winner = "Bela"
 else:
     winner = "Marleen"
