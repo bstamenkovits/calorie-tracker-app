@@ -34,22 +34,45 @@ st.plotly_chart(plot, use_container_width=True)
 
 
 st.write(f"### Log Weight")
-date = st.date_input("Date", value=datetime.today().date())
-weight = st.slider("Weight (kg)", min_value=current_weight-5, max_value=current_weight+5, value=current_weight, step=0.1)
-# weight = st.number_input("Weight (kg)", min_value=current_weight, step=0.1)
+mode = st.pills("Mode", ["Add", "Remove"], default="Add", selection_mode="single")
+if mode == "Add":
+    date = st.date_input("Date", value=datetime.today().date())
+    weight = st.slider("Weight (kg)", min_value=current_weight-5, max_value=current_weight+5, value=current_weight, step=0.1)
+    # weight = st.number_input("Weight (kg)", min_value=current_weight, step=0.1)
 
-new_row = {
-    "date": date.strftime("%Y-%m-%d"),
-    "weight": weight
-}
-df_weight_log = pd.concat([df_weight_log, pd.DataFrame([new_row])], ignore_index=True)
+    new_row = {
+        "date": date.strftime("%Y-%m-%d"),
+        "weight": weight
+    }
+    df_weight_log = pd.concat([df_weight_log, pd.DataFrame([new_row])], ignore_index=True)
 
-if st.button("Add Weight"):
-    st.write("updated data:")
-    st.dataframe(df_weight_log.tail(1))
+    if st.button("Add Weight"):
+        st.write("updated data:")
+        st.dataframe(df_weight_log.tail(1))
 
-    gsheets.update_google_sheet(
-        sheet_name=f"weight_log_{who.lower()}",
-        updated_data=df_weight_log
-    )
-    st.success("Food log added successfully!")
+        gsheets.update_google_sheet(
+            sheet_name=f"weight_log_{who.lower()}",
+            updated_data=df_weight_log
+        )
+        st.success("Weight log added successfully!")
+        st.rerun()
+
+
+elif mode == "Remove":
+    date = st.date_input("Date", value=datetime.today().date())
+    df_to_remove = df_weight_log[df_weight_log["date"] == date.strftime("%Y-%m-%d")]
+    st.write(df_to_remove)
+
+    weight = st.selectbox("Select weight entry to remove", df_to_remove["weight"].values)
+    # weight = st.number_input("Weight (kg)", min_value=current_weight, step=0.1)
+
+    if st.button("Remove Weight"):
+        df_weight_log = df_weight_log[~((df_weight_log["date"] == date.strftime("%Y-%m-%d")) & (df_weight_log["weight"] == weight))]
+
+        gsheets.update_google_sheet(
+            sheet_name=f"weight_log_{who.lower()}",
+            updated_data=df_weight_log
+        )
+
+        st.success("Weight log removed successfully!")
+        st.rerun()
