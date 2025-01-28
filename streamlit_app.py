@@ -26,12 +26,14 @@ weight_log_marleen["delta"] = weight_log_marleen["weight"] - start_marleen
 df = weight_log_bela.merge(weight_log_marleen, on="date", suffixes=("_bela", "_marleen"), how="outer")
 df = df.fillna(method='ffill')
 
-if df['weight_bela'].values[-1] < df['weight_marleen'].values[-1]:
+if df['delta_bela'].values[-1] < df['delta_marleen'].values[-1]:
     winner = "Bela"
 else:
     winner = "Marleen"
 
 st.write(f"#### 🏆 *{winner}* is winning the weight loss challenge!")
+st.write(f"* Delta Bela: {round(df['delta_bela'].values[-1], 1)} kg")
+st.write(f"* Delta Marleen: {round(df['delta_marleen'].values[-1], 1)} kg")
 
 df = df.rename(columns={
     "date": "Date",
@@ -39,10 +41,8 @@ df = df.rename(columns={
     "weight_marleen": "Weight Marleen (kg)",
     "delta_bela": "Delta Bela (kg)",
     "delta_marleen": "Delta Marleen (kg)"
-})
+}).sort_values(by="Date", ascending=False)
 
-
-st.write(df)
 fig = px.line(df, x="Date", y=["Delta Bela (kg)", "Delta Marleen (kg)"], title="Weight Loss Over Time", range_y=[-12, 2], labels={"value": "Weight Lost (kg)"})
 fig.update_layout(legend=dict(
     x=0.15,
@@ -51,3 +51,5 @@ fig.update_layout(legend=dict(
     yanchor='top'
 ))
 st.plotly_chart(fig)
+
+st.write(df)

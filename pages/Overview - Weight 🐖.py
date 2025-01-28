@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime
 from google_sheets import GoogleSheetsInterface
 import plotly.express as px
+from scipy.interpolate import make_interp_spline, splrep, splev
 
 gsheets = GoogleSheetsInterface()
 
@@ -17,12 +18,25 @@ df_weight_log = gsheets.load_google_sheet_data(sheet_name=f"weight_log_{who.lowe
 
 current_weight = float(df_weight_log["weight"].values[-1])
 
-df = df_weight_log.rename(columns={"date": "Date", "weight": "Weight (kg)"})
-st.write(df)
+df_weight_log["moving_average"] = df_weight_log["weight"].rolling(window=3, min_periods=1).mean()
+
+df = df_weight_log.rename(columns={"date": "Date", "weight": "Weight (kg)", "moving_average": "Weight Moving Average (kg)"})
+
 df_weight_log_plot = df_weight_log.copy()
 df_weight_log_plot = df_weight_log_plot.sort_values(by="date")
 
-plot = px.line(df_weight_log_plot, x="date", y="weight", labels={"weight": "Weight (kg)"})
+x = pd.to_datetime(df_weight_log_plot["date"])
+y = df_weight_log_plot["weight"]
+y_avg = df_weight_log_plot["moving_average"]
+
+tck = splrep(x, y_avg, s=3)
+x_smooth = x
+y_smooth = splev(x_smooth, tck, der=0)
+
+
+plot = px.scatter(df_weight_log_plot, x="date", y="weight", labels={"weight": "Weight (kg)"}, color_discrete_sequence=["#ff4b4b"])
+plot.add_scatter(x=x_smooth, y=y_smooth, mode="lines", name="Moving Average")
+
 minval = int(df_weight_log_plot["weight"].min()-1.5)
 maxval = int(df_weight_log_plot["weight"].max()+1.5)
 
@@ -30,12 +44,14 @@ plot.update_yaxes(range=[minval, maxval])
 
 st.plotly_chart(plot, use_container_width=True)
 
+st.write(df)
 
 
 
 st.write(f"### Log Weight")
 mode = st.pills("Mode", ["Add", "Remove"], default="Add", selection_mode="single")
 if mode == "Add":
+    df_weight_log = df_weight_log[["date", "weight"]]
     date = st.date_input("Date", value=datetime.today().date())
     weight = st.slider("Weight (kg)", min_value=current_weight-5, max_value=current_weight+5, value=current_weight, step=0.1)
     # weight = st.number_input("Weight (kg)", min_value=current_weight, step=0.1)
