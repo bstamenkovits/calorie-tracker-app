@@ -3,6 +3,9 @@ private-key.json
 
 *.csv
 
+#pycharm file
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

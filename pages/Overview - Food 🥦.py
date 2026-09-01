@@ -40,6 +40,9 @@ def calc_weight(row):
 def calc_total_calories(row):
     return round(row["weight"] * row["Calories (kcal)"]/100, 0)
 
+def calc_total_carbs(row):
+    return round(row["weight"] * row["Carbs (g)"]/100, 0)
+
 # filter for a single day
 df_day = df_food_log[(df_food_log["date"]==date)]
 
@@ -47,26 +50,35 @@ df_day = df_food_log[(df_food_log["date"]==date)]
 df_day = df_day.merge(df_food_data, left_on="name", right_on="Name", how="left")
 df_day["weight"] = df_day.apply(calc_weight, axis=1)
 df_day["total_calories"] = df_day.apply(calc_total_calories, axis=1)
+df_day["total_carbs"] = df_day.apply(calc_total_carbs, axis=1)
 
 # rename columns to be displayed
 df_day = df_day.rename(columns={
     "name": "Food",
     "quantity": "Quantity",
     "serving": "Serving",
-    "total_calories": "Calories"
+    "total_calories": "Calories",
+    "total_carbs": "Carbs"
 })
 
 # summary of calories by meal
 calories_by_meal = df_day.groupby("meal")["Calories"].sum()
+carbs_by_meal = df_day.groupby("meal")["Carbs"].sum()
 
 # Create a stacked bar chart
 calories_by_meal = calories_by_meal.reset_index()
 calories_by_meal = calories_by_meal.transpose()
+carbs_by_meal = carbs_by_meal.reset_index()
+carbs_by_meal = carbs_by_meal.transpose()
 
 # assign meal as column header
 calories_by_meal.columns = calories_by_meal.iloc[0]
 calories_by_meal = calories_by_meal[1:]
 calories_by_meal.reset_index(drop=True, inplace=True)
+
+carbs_by_meal.columns = carbs_by_meal.iloc[0]
+carbs_by_meal = carbs_by_meal[1:]
+carbs_by_meal.reset_index(drop=True, inplace=True)
 
 def calculate_energy_burned(weight, height, birthday, exercise_level, sex):
     exercise_map = {
@@ -120,6 +132,7 @@ target = df_target["target"].values[0]
 capacity = capacity - target
 
 consumed = calories_by_meal.sum(axis=1)
+carbs_consumed = carbs_by_meal.sum(axis=1)
 remaining = capacity - consumed
 
 calories_by_meal['_Remaining'] = remaining
@@ -133,14 +146,16 @@ calories_by_meal = calories_by_meal.rename(columns={"Breakfast": "1. 🍌 Breakf
 
 if remaining.values[0] > 0:
     st.write(f"#### Great Job!", unsafe_allow_html=True)
-    st.markdown(f"<span style='font-weight:bold'>Consumed: {round(consumed.to_list()[0])} kcal </span>", unsafe_allow_html=True)
+    st.markdown(f"<span style='font-weight:bold'>Carbs Consumed: {round(carbs_consumed.to_list()[0])} g </span>", unsafe_allow_html=True)
+    st.markdown(f"<span style='font-weight:bold'>KCal Consumed: {round(consumed.to_list()[0])} kcal </span>", unsafe_allow_html=True)
     st.markdown(f"<span style='font-weight:bold'>Allowed: {round(capacity)} kcal </span>", unsafe_allow_html=True)
     st.markdown(f"<span style='color:green; font-weight:bold'>Remaining: {round(float(remaining.values[0]))} kcal </span>", unsafe_allow_html=True)
     colors = ("#d66154", "#dbd5ba", "#48ab8a", "#8db6c3", "#898989")
     colors = ("#bababa", "#9f9f9f", "#616161", "#4b4b4b", "#209253")
 else:
     st.write(f"#### Oh No!", unsafe_allow_html=True)
-    st.markdown(f"<span style='font-weight:bold'>Consumed: {round(consumed.to_list()[0])} kcal </span>", unsafe_allow_html=True)
+    st.markdown(f"<span style='font-weight:bold'>Carbs Consumed: {round(carbs_consumed.to_list()[0])} g </span>", unsafe_allow_html=True)
+    st.markdown(f"<span style='font-weight:bold'>KCal Consumed: {round(consumed.to_list()[0])} kcal </span>", unsafe_allow_html=True)
     st.markdown(f"<span style='font-weight:bold'>Allowed: {round(capacity)} kcal </span>", unsafe_allow_html=True)
     st.markdown(f"<span style='color:red'>You have exceeded your daily calorie intake by {round(-remaining.values[0])} kcal</span>", unsafe_allow_html=True)
     colors = ("#d66154", "#dbd5ba", "#48ab8a", "#8db6c3", "#dd2e44")
